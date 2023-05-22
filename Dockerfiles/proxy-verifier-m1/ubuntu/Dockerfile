@@ -149,7 +149,7 @@ RUN \
         .zshrc \
         .oh-my-zsh/
 
-RUN sudo chsh -s /usr/bin/zsh bneradt
+RUN sudo chsh -s /usr/bin/zsh ${username}
 
 # Install fzf
 RUN \
