@@ -166,7 +166,7 @@ RUN \
         .oh-my-zsh/
 
 RUN echo "source /opt/rh/gcc-toolset-11/enable" >> /home/$username/.zshrc
-RUN sudo chsh -s /usr/bin/zsh bneradt
+RUN sudo chsh -s /usr/bin/zsh ${username}
 
 # Install fzf
 RUN \
