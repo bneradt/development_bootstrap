@@ -24,7 +24,8 @@ RUN yum -y install epel-release dnf-plugins-core; yum config-manager --set-enabl
     perl-ExtUtils-MakeMaker perl-Digest-SHA perl-URI curl tcl-devel java; \
     # autest stuff
     yum -y install python3 httpd-tools procps-ng nmap-ncat python3-pip \
-    python3-gunicorn python3-requests python3-devel python3-psutil telnet;
+    python3-gunicorn python3-requests python3-devel python3-psutil telnet; \
+    yum clean all
 
 RUN pip3 install --upgrade pip
 RUN pip3 install pipenv httpbin
@@ -55,7 +56,9 @@ RUN mkdir -p ${h3_tools_dir}
 WORKDIR ${h3_tools_dir}
 COPY /build_h3_tools.sh ${h3_tools_dir}/build_h3_tools.sh
 # This will install OpenSSL QUIC and related tools in /opt.
-RUN bash ${h3_tools_dir}/build_h3_tools.sh
+RUN \
+  bash ${h3_tools_dir}/build_h3_tools.sh; \
+  rm -rf ${h3_tools_dir} /root/.rustup
 WORKDIR /root
 
 # Install some of our needed go applications.
@@ -121,7 +124,9 @@ RUN git clone https://github.com/neovim/neovim; \
     cd neovim; \
     git checkout v0.7.0; \
     make -j `nproc`; \
-    make install
+    make install; \
+    cd /root; \
+    rm -rf neovim
 
 # Install Bear. This takes a while, but I had trouble using an rpm.
 RUN yum install -y json-devel spdlog-devel fmt-devel
@@ -130,7 +135,9 @@ RUN git clone https://github.com/rizsotto/Bear.git; \
     source /opt/rh/gcc-toolset-11/enable; \
     cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF; \
     make -j `nproc` all; \
-    make install
+    make install; \
+    cd /root; \
+    rm -rf Bear
 
 # Python linting tools.
 RUN pip install --upgrade pep257 mypy yapf autopep8 flake8 pylint pydocstyle pycodestyle
@@ -242,14 +249,16 @@ RUN \
   cd /home/${username}/src; \
   git clone https://github.com/git/git.git; \
   cd git/; \
-  git checkout v2.34.1; \
+  git checkout v2.41.0; \
   make configure; \
   ./configure --prefix=/usr/local; \
   make -j `nproc` all doc; \
   sudo yum -y remove git; \
   sudo yum -y remove 'git-*'; \
   sudo make install install-doc install-html; \
-  cp contrib/completion/git-completion.bash /home/${username}/.git-completion.bash
+  cp contrib/completion/git-completion.bash /home/${username}/.git-completion.bash; \
+  cd /home/${username}/src; \
+  rm -rf git
 
 # Use a recent fish and oh-my-zsh.
 RUN sudo yum install -y zsh util-linux-user

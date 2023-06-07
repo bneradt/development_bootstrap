@@ -19,7 +19,9 @@ RUN git clone https://github.com/neovim/neovim; \
     cd neovim; \
     git checkout v0.7.0; \
     make -j `nproc`; \
-    make install
+    make install; \
+    cd /root; \
+    rm -rf neovim
 
 # Install Bear. This takes a while, but I had trouble using an rpm.
 RUN yum install -y json-devel spdlog-devel fmt-devel
@@ -28,7 +30,9 @@ RUN git clone https://github.com/rizsotto/Bear.git; \
     source /opt/rh/gcc-toolset-11/enable; \
     cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF; \
     make -j `nproc` all; \
-    make install
+    make install; \
+    cd /root; \
+    rm -rf Bear
 
 # Python linting tools.
 RUN pip install --upgrade pep257 mypy yapf autopep8 flake8 pylint pydocstyle pycodestyle
@@ -140,14 +144,16 @@ RUN \
   cd /home/${username}/src; \
   git clone https://github.com/git/git.git; \
   cd git/; \
-  git checkout v2.34.1; \
+  git checkout v2.41.0; \
   make configure; \
   ./configure --prefix=/usr/local; \
   make -j `nproc` all doc; \
   sudo yum -y remove git; \
   sudo yum -y remove 'git-*'; \
   sudo make install install-doc install-html; \
-  cp contrib/completion/git-completion.bash /home/${username}/.git-completion.bash
+  cp contrib/completion/git-completion.bash /home/${username}/.git-completion.bash; \
+  cd /home/${username}/src; \
+  rm -rf git
 
 # Use a recent fish and oh-my-zsh.
 RUN sudo yum install -y zsh util-linux-user
