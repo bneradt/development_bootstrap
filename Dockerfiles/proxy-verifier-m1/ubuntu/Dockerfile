@@ -22,6 +22,9 @@ RUN \
     cd /var/tmp; \
     rm -rf proxy-verifier
 
+# Needed for pipenv install of Proxy Verifier autest Pipenv.
+RUN apt-get  install -y libssl-dev
+
 # User-specific specifications.
 RUN apt-get install -y python3-pip wget silversearcher-ag tmux exuberant-ctags neovim bear
 
