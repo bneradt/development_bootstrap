@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+script_name=$(basename $0)
+usage="${script_name} \<new_docker_image_name\> \"\<Git User Name\>\" \<git.user@email.com\>"
+
+tmpdir=/tmp/docker_image_create_$$
+
+fail()
+{
+  echo $1
+  exit 1
+}
+
+[ $# -eq 3 ] || fail "${usage}"
+tag_name=$1; shift
+git_username=$1; shift
+git_email=$1; shift
+
+parent_dir=$(dirname $0)
+if [ `uname -m` = "arm64" ]
+then
+  ats_dockerfile_dir=${parent_dir}/../Dockerfiles/ats_fedora_m1
+else
+  fail "There is not x86_64 ats_fedora Dockerfile yet."
+fi
+[ -d "${ats_dockerfile_dir}" ] || fail "Could not find ATS Dockerfile: ${ats_dockerfile_dir}"
+
+context_dir=${parent_dir}/../docker_context
+[ -d "${context_dir}" ] || fail "Could not find ATS context directory: ${context_dir}"
+
+set -x
+set -e
+mkdir -p ${tmpdir}
+cp -rf ${ats_dockerfile_dir}/* ${tmpdir}
+cp -rf ${context_dir}/.[^.]* ${tmpdir}
+cp -rf ${context_dir}/* ${tmpdir}
+cp -rf ${context_dir}/rockylinux/.[^.]* ${tmpdir}
+
+cd $tmpdir
+sudo docker build \
+  -t ${tag_name} \
+  --build-arg "username=${USER}" \
+  --build-arg "userid=$(id -u)" \
+  --build-arg "git_username=$git_username" \
+  --build-arg "git_email=$git_email" \
+  .
+
+rm -rf $tmpdir

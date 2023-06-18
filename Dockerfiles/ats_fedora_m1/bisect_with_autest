@@ -1,0 +1,60 @@
+#!/bin/bash
+
+usage="$(basename $0) <bad> <good> <autest>"
+
+tmpdir=/tmp/bisect_with_autest.$$
+test_script=${tmpdir}/bisect_script.sh
+
+fail()
+{
+  echo $1
+  exit 1
+}
+
+[ $# -eq 3 ] || fail "$usage"
+bad=$1; shift
+good=$1; shift
+autest=$1; shift
+
+git_root=$(git rev-parse --show-toplevel)
+cd ${git_root}
+repo_name=`basename $(pwd)`
+build_dir="${HOME}/build/${repo_name}"
+
+mkdir ${tmpdir}
+
+git bisect reset
+git bisect start
+git bisect bad ${bad}
+git bisect good ${good}
+
+cat << EOF > ${test_script}
+#!/bin/bash
+
+set -e
+
+commit=\$(git rev-parse --short HEAD)
+commit_dir=${tmpdir}/\${commit}
+build_output=\${commit_dir}/build.out
+test_output=\${commit_dir}/test.out
+sandbox=\${commit_dir}/sandbox
+
+mkdir \${commit_dir}
+cd ${git_root}
+git clean -d -x -f -f -q
+rm -rf ${build_dir}
+build_ats > \${build_output} 2>&1
+cd ${git_root}/tests
+./autest.sh \
+  --sandbox \${sandbox} \
+  --clean=none \
+  --ats-bin ${build_dir}/bin \
+  -f ${autest} \
+  > \${test_output} 2>&1
+[ \$? -eq 0 ] || exit 1
+exit 0
+EOF
+
+chmod 755 ${test_script}
+
+git bisect run ${test_script}
