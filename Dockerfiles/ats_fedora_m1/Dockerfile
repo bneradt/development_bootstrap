@@ -129,7 +129,7 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 # User-specific specifications.
 RUN <<EOF
   yum install -y \
-    the_silver_searcher tmux man-pages neovim bear git
+    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump
 EOF
 
 # Python linting tools.
@@ -259,7 +259,6 @@ RUN \
         .zshrc \
         .oh-my-zsh/
 
-RUN echo "source /opt/rh/gcc-toolset-11/enable" >> /home/$username/.zshrc
 RUN sudo chsh -s /usr/bin/zsh ${username}
 
 # Install fzf, which adds shell shortcuts.
