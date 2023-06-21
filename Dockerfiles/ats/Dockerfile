@@ -1,38 +1,24 @@
-FROM ci.trafficserver.apache.org/ats/rockylinux:8
+# Base image.
+FROM ci.trafficserver.apache.org/ats/fedora:38
 
+# ARG stuff for the build.
 ARG username
 ARG userid
 ARG git_username
 ARG git_email
 
+#------------------
+# My customization.
+#------------------
 RUN yum install -y glibc-locale-source glibc-langpack-en
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 
 # User-specific specifications.
-RUN yum install -y the_silver_searcher tmux man-pages cmake
-
-# The packaged version of neovim is old. Install a recent one.  This would be
-# easier if fuse worked better in a docker build, but there doesn't seem to be
-# an easy way to grant privileged access to a docker build run. So we have to
-# do things by hand.
-RUN git clone https://github.com/neovim/neovim; \
-    cd neovim; \
-    git checkout v0.7.0; \
-    make -j `nproc`; \
-    make install; \
-    cd /root; \
-    rm -rf neovim
-
-# Install Bear. This takes a while, but I had trouble using an rpm.
-RUN yum install -y json-devel spdlog-devel fmt-devel
-RUN git clone https://github.com/rizsotto/Bear.git; \
-    cd Bear/; \
-    source /opt/rh/gcc-toolset-11/enable; \
-    cmake -DENABLE_UNIT_TESTS=OFF -DENABLE_FUNC_TESTS=OFF; \
-    make -j `nproc` all; \
-    make install; \
-    cd /root; \
-    rm -rf Bear
+RUN <<EOF
+  set -e
+  yum install -y \
+    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump
+EOF
 
 # Python linting tools.
 RUN pip install --upgrade pep257 mypy yapf autopep8 flake8 pylint pydocstyle pycodestyle
@@ -40,14 +26,17 @@ RUN pip install --upgrade pep257 mypy yapf autopep8 flake8 pylint pydocstyle pyc
 # Install nodejs for coc-vim.
 RUN curl -o /tmp/lts -sL install-node.vercel.app/lts && bash /tmp/lts --yes
 
-RUN useradd \
+RUN <<EOF
+  set -e
+  useradd \
     --home-dir /home/$username \
     --gid users \
     --uid $userid \
     --shell /bin/bash \
     --create-home \
     $username
-RUN echo "$username ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+  echo "$username ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+EOF
 
 USER $username
 WORKDIR /home/$username
@@ -69,9 +58,11 @@ COPY \
 
 # Alas, COPY is not run as USER, and older docker version do not have --chown
 # for COPY.
-RUN \
-    sudo chown $username:nobody /home/$username/bin/*; \
-    chmod 755 /home/$username/bin/*
+RUN <<EOF
+  set -e
+  sudo chown $username:nobody /home/$username/bin/*
+  chmod 755 /home/$username/bin/*
+EOF
 
 COPY \
     .agignore \
@@ -122,65 +113,56 @@ RUN \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Install the vim plugins.
-RUN nvim +'PlugInstall --sync' +qa
-RUN nvim +'CocInstall -sync coc-clangd coc-pyright coc-json coc-sh' +qall
+RUN <<EOF
+  set -e
+  nvim +'PlugInstall --sync' +qa
+  nvim +'CocInstall -sync coc-clangd coc-pyright coc-json coc-sh' +qall
+EOF
 
 # Install the latest version of clang.
-RUN \
-  sudo dnf clean metadata; \
+RUN <<EOF
+  set -e
+  sudo dnf clean metadata
   sudo dnf install -y clang clang-tools-extra
+EOF
 
-RUN  \
-  git config --global user.name "$git_username"; \
+RUN <<EOF
+  set -e
+  git config --global user.name "$git_username"
   git config --global user.email $git_email
-
-RUN echo "source /opt/rh/gcc-toolset-11/enable" >> /home/$username/.bashrc
-
-# Update git to a more recent version. This, among probably other advantages,
-# supports nvimdiff.
-RUN \
-  sudo yum install -y asciidoc xmlto libcurl-devel; \
-  mkdir -p /home/${username}/src; \
-  cd /home/${username}/src; \
-  git clone https://github.com/git/git.git; \
-  cd git/; \
-  git checkout v2.41.0; \
-  make configure; \
-  ./configure --prefix=/usr/local; \
-  make -j `nproc` all doc; \
-  sudo yum -y remove git; \
-  sudo yum -y remove 'git-*'; \
-  sudo make install install-doc install-html; \
-  cp contrib/completion/git-completion.bash /home/${username}/.git-completion.bash; \
-  cd /home/${username}/src; \
-  rm -rf git
+EOF
 
 # Use a recent fish and oh-my-zsh.
 RUN sudo yum install -y zsh util-linux-user
 RUN sh -c "`wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -`"
-RUN \
-   git clone https://github.com/zsh-users/zsh-autosuggestions /home/${username}/.oh-my-zsh/custom/plugins/zsh-autosuggestions; \
-   git clone https://github.com/zsh-users/zsh-history-substring-search /home/${username}/.oh-my-zsh/custom/plugins/zsh-history-substring-search; \
-   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/${username}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+RUN <<EOF
+  set -e
+  git clone https://github.com/zsh-users/zsh-autosuggestions /home/${username}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-history-substring-search /home/${username}/.oh-my-zsh/custom/plugins/zsh-history-substring-search
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /home/${username}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+EOF
 
 COPY .zshrc /home/$username/
 COPY aliases.zsh /home/$username/.oh-my-zsh/custom/aliases.zsh
 COPY bneradt.zsh-theme /home/$username/.oh-my-zsh/custom/themes/bneradt.zsh-theme
-RUN \
-    sudo chown -R $username:nobody \
-        .zshrc \
-        .oh-my-zsh/
+RUN <<EOF
+  set -e
+  sudo chown -R $username:nobody \
+      .zshrc \
+      .oh-my-zsh/
+EOF
 
-RUN echo "source /opt/rh/gcc-toolset-11/enable" >> /home/$username/.zshrc
 RUN sudo chsh -s /usr/bin/zsh ${username}
 
-# Install fzf
-RUN \
-  mkdir -p /home/${username}/src; \
-  cd /home/${username}/src; \
-  git clone https://github.com/junegunn/fzf.git; \
-  cd fzf; \
+# Install fzf, which adds shell shortcuts.
+RUN <<EOF
+  set -e
+  mkdir -p /home/${username}/src
+  cd /home/${username}/src
+  git clone https://github.com/junegunn/fzf.git
+  cd fzf
   ./install --all
+EOF
 
 WORKDIR /home/$username
 

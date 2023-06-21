@@ -15,10 +15,11 @@ openssl="/opt/openssl-quic"
 
 repo_name=`basename $(pwd)`
 build_dir="${HOME}/build/${repo_name}"
-command="autoreconf -fi && ./configure --prefix ${build_dir} --with-openssl=${openssl}--enable-werror --enable-debug --enable-wccp"
+command="autoreconf -fi && ./configure --prefix ${build_dir} --with-openssl=${openssl}--enable-experimental-plugins --enable-example-plugins --enable-werror --enable-debug --enable-wccp"
 dirname=$(dirname $(pwd))
 [ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running: ${command}"
 
+source /opt/rh/gcc-toolset-11/enable
 # Make sure we get the quic-version of curl.
 export PATH=/opt/bin:${PATH}
 if [ -d "${build_dir}" ]
@@ -36,6 +37,6 @@ then
   rm -rf ${build_dir}
 fi
 autoreconf -fi
-./configure --prefix ${build_dir} --with-openssl=${openssl} --enable-werror --enable-debug --enable-wccp
+./configure --prefix ${build_dir} --with-openssl=${openssl} --enable-experimental-plugins --enable-example-plugins --enable-werror --enable-debug --enable-wccp
 bear -- make -j $(nproc)
 make install

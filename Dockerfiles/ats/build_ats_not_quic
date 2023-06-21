@@ -17,7 +17,6 @@ command="autoreconf -fi && ./configure --prefix ${build_dir} --enable-example-pl
 dirname=$(dirname $(pwd))
 [ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running: ${command}"
 
-source /opt/rh/gcc-toolset-11/enable
 if [ -d "${build_dir}" ]
 then
   while true; do
