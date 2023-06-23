@@ -10,14 +10,14 @@ ARG git_email
 #------------------
 # My customization.
 #------------------
-RUN yum install -y glibc-locale-source glibc-langpack-en
+RUN dnf install -y glibc-locale-source glibc-langpack-en
 RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 
 # User-specific specifications.
 RUN <<EOF
   set -e
-  yum install -y \
-    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump
+  dnf install -y \
+    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb
 EOF
 
 # Python linting tools.
@@ -133,7 +133,7 @@ RUN <<EOF
 EOF
 
 # Use a recent fish and oh-my-zsh.
-RUN sudo yum install -y zsh util-linux-user
+RUN sudo dnf install -y zsh util-linux-user
 RUN sh -c "`wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -`"
 RUN <<EOF
   set -e
@@ -166,5 +166,5 @@ EOF
 
 WORKDIR /home/$username
 
-# Keep this at the end to clean up the yum cache.
-RUN sudo yum clean all
+# Keep this at the end to clean up the dnf cache.
+RUN sudo dnf clean all
