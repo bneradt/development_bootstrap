@@ -17,12 +17,7 @@ git_username=$1; shift
 git_email=$1; shift
 
 parent_dir=$(dirname $0)
-if [ `uname -m` = "arm64" ]
-then
-  pv_dockerfile_dir=${parent_dir}/../Dockerfiles/proxy-verifier-m1
-else
-  pv_dockerfile_dir=${parent_dir}/../Dockerfiles/proxy-verifier
-fi
+pv_dockerfile_dir=${parent_dir}/../Dockerfiles/proxy-verifier
 ubuntu_dockerfile_dir=${pv_dockerfile_dir}/ubuntu
 [ -d "${ubuntu_dockerfile_dir}" ] || fail "Could not find ATS Dockerfile: ${ubuntu_dockerfile_dir}"
 

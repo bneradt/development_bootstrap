@@ -17,7 +17,7 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 RUN <<EOF
   set -e
   dnf install -y \
-    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb
+    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb net-tools
 EOF
 
 # Python linting tools.
