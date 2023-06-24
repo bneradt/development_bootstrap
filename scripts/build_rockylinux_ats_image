@@ -37,7 +37,7 @@ cp -rf ${context_dir}/* ${tmpdir}
 cp -rf ${context_dir}/rockylinux/.[^.]* ${tmpdir}
 
 cd $tmpdir
-sudo docker build \
+docker build \
   -t ${tag_name} \
   --build-arg "username=${USER}" \
   --build-arg "userid=$(id -u)" \

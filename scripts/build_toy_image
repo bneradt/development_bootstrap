@@ -34,7 +34,7 @@ cp -rf ${docker_file_dir}/* ${tmpdir}
 cp -rf ${docker_file_dir}/.[^.]* ${tmpdir} || true
 
 cd $tmpdir
-sudo docker build \
+docker build \
   -t ${tag_name} \
   --build-arg "username=${USER}" \
   --build-arg "userid=$(id -u)" \
