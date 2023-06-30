@@ -16,6 +16,7 @@ RUN <<EOF
   dnf install -y \
     pipenv python3-devel python3-pip openssl-devel \
     cmake autoconf libtool pkg-config clang \
+    glibc-static libstdc++-static \
     curl sudo git bzip2 \
     perl-ExtUtils-MakeMaker perl-Digest-SHA perl-URI perl-FindBin
 EOF
