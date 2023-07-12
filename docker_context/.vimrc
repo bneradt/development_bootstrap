@@ -14,6 +14,9 @@ if stridx(@%, 'man://') >= 0
   set directory=~/.vim/swap,.
 endif
 
+" Turn off vim's mouse stealing.
+set mouse=
+
 " Make vim auto-wrap tripple slash comments.
 autocmd Filetype c,cpp set comments^=:///
 
