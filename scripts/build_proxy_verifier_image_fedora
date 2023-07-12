@@ -38,6 +38,7 @@ cp ${pv_dockerfile_dir}/* ${tmpdir} 2>/dev/null || true
 
 cd $tmpdir
 docker build \
+  --ssh default \
   -t ${tag_name} \
   --build-arg "username=${USER}" \
   --build-arg "userid=$(id -u)" \
