@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:23.04
 
 ARG username
 ARG userid
@@ -11,24 +11,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # User-specific specifications.
 RUN apt-get update; \
-    apt-get install -y git pipenv python3 sudo wget silversearcher-ag tmux \
-                       cmake exuberant-ctags fzf curl
-
-# Python linting tools.
-RUN pip install --upgrade pep257 mypy yapf autopep8 flake8 pylint pydocstyle pycodestyle
-
-# The packaged version of neovim is old. Install a recent one.  This would be
-# easier if fuse worked better in a docker build, but there doesn't seem to be
-# an easy way to grant privileged access to a docker build run. So we have to
-# do things by hand.
-RUN wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage && \
-    chmod u+x nvim.appimage && \
-    ./nvim.appimage --appimage-extract && \
-    cd squashfs-root/usr && \
-    tar cf - . | tar xf - -C /usr
-
-# Install nodejs for coc-vim.
-RUN curl -o /tmp/lts -sL install-node.vercel.app/lts && bash /tmp/lts --yes
+    apt-get install -y \
+        git pipenv cmake clang golang python3 python3-pip nodejs \
+        sudo wget silversearcher-ag tmux exuberant-ctags fzf curl \
+        neovim \
+        python3-autopep8 python3-flake8
 
 RUN useradd \
     --home-dir /home/$username \
