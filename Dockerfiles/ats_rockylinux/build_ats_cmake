@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Build ATS using the /opt/openssl-quic version of OpenSSL.
+
+set -e
+set -x
+expected_dirname="${HOME}/src"
+fail()
+{
+  echo $1
+  exit 1
+}
+
+openssl="/opt/openssl-quic"
+
+repo_name=`basename $(pwd)`
+install_dir="${HOME}/build/${repo_name}"
+dirname=$(dirname $(pwd))
+[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running"
+
+# Make sure we get the quic-version of curl.
+export PATH=/opt/bin:${PATH}
+if [ -d "${install_dir}" ]
+then
+  while true; do
+    read -p "${install_dir} already exists. Clean it? (y/n) " yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit 0;;
+        * ) echo "Please answer y or n.";;
+    esac
+  done
+
+  git clean -d -x -f -f -q
+  rm -rf ${install_dir}
+fi
+
+
+build_dir="cmake-build-release"
+cmake \
+  -B ${build_dir} \
+  -GNinja \
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DOPENSSL_ROOT_DIR=${openssl} \
+  -DCMAKE_INSTALL_PREFIX=${install_dir} \
+  -DBUILD_EXPERIMENTAL_PLUGINS=ON
+
+cmake --build ${build_dir} -j `nproc`
+cmake --install ${build_dir}

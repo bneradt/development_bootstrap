@@ -56,6 +56,7 @@ RUN mkdir -p bin
 COPY \
     /bisect_with_autest \
     /build_ats \
+    /build_ats_cmake \
     /clean_build_test \
     /build_ats_core \
     /build_ats_coverage \
