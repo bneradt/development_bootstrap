@@ -14,7 +14,7 @@ RUN apt-get update; \
     apt-get install -y \
         git pipenv cmake clang golang python3 python3-pip nodejs \
         sudo wget silversearcher-ag tmux exuberant-ctags fzf curl \
-        neovim \
+        neovim zsh \
         python3-autopep8 python3-flake8
 
 RUN useradd \

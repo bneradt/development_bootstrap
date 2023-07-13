@@ -36,7 +36,7 @@ else
   git checkout -b ${branch_name}
 fi
 
-tmux new-session -s ${branch_name}   -n "src" -d "cd ${ts_src}; bash -i"
-tmux new-window  -t ${branch_name}:1 -n "test"   "cd ${ts_src}/tests; bash -i"
+tmux new-session -s ${branch_name}   -n "src" -d "cd ${ts_src}; zsh -i"
+tmux new-window  -t ${branch_name}:1 -n "test"   "cd ${ts_src}/tests; zsh -i"
 
 tmux select-window -t ${branch_name}:0
