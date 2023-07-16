@@ -38,12 +38,14 @@ fi
 
 build_dir="cmake-build-release"
 cmake \
+  -G Ninja \
   -B ${build_dir} \
-  -GNinja \
   -DCMAKE_BUILD_TYPE=Debug \
   -DOPENSSL_ROOT_DIR=${openssl} \
   -DCMAKE_INSTALL_PREFIX=${install_dir} \
-  -DBUILD_EXPERIMENTAL_PLUGINS=ON
+  -DBUILD_EXPERIMENTAL_PLUGINS=ON \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
+  -DCMAKE_COMPILE_WARNING_AS_ERROR=ON
 
 cmake --build ${build_dir} -j `nproc`
 cmake --install ${build_dir}
