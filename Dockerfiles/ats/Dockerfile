@@ -51,6 +51,7 @@ COPY \
     /build_ats_coverage \
     /build_ats_not_quic \
     /build_ats_with_clang \
+    /build_ats_quiche \
     /cos \
     /normalize_log \
     /start_ats_project \
