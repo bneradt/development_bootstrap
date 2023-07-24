@@ -18,7 +18,8 @@ RUN <<EOF
     cmake autoconf libtool pkg-config clang \
     glibc-static libstdc++-static \
     curl sudo git bzip2 \
-    perl-ExtUtils-MakeMaker perl-Digest-SHA perl-URI perl-FindBin
+    perl-ExtUtils-MakeMaker perl-Digest-SHA perl-URI perl-FindBin \
+    perl-IPC-Cmd perl-Pod-Html
 EOF
 
 RUN <<EOF
