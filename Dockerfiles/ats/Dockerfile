@@ -1,5 +1,5 @@
 # Base image.
-FROM ci.trafficserver.apache.org/ats/fedora:38
+FROM ci.trafficserver.apache.org/ats/fedora:39
 
 # ARG stuff for the build.
 ARG username
@@ -17,7 +17,7 @@ RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 RUN <<EOF
   set -e
   dnf install -y \
-    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb net-tools
+    ctags the_silver_searcher tmux neovim bear git tcpdump net-tools
 EOF
 
 # Python linting tools.
