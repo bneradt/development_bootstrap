@@ -45,14 +45,14 @@ git clean -d -x -f -f -q
 rm -rf ${build_dir}
 build_ats > \${build_output} 2>&1
 cd ${git_root}/tests
+ret=0
 ./autest.sh \
   --sandbox \${sandbox} \
   --clean=none \
   --ats-bin ${build_dir}/bin \
   -f ${autest} \
-  > \${test_output} 2>&1
-[ \$? -eq 0 ] || exit 1
-exit 0
+  > \${test_output} 2>&1 || ret=1
+exit \${ret}
 EOF
 
 chmod 755 ${test_script}
