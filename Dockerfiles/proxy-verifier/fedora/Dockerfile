@@ -27,7 +27,8 @@ RUN <<EOF
   cd /var/tmp
   git clone https://github.com/yahoo/proxy-verifier.git
   pushd proxy-verifier
-  bash tools/build_library_dependencies.sh /opt/pv_libs
+  version=$(awk -F\" '/PartVersion/ {print $2}' local/parts/proxy-verifier.part)
+  bash tools/build_library_dependencies.sh /opt/pv_libs_${version}
   popd
   rm -rf proxy-verifier
 EOF
