@@ -36,7 +36,7 @@ then
 fi
 
 
-build_dir="cmake-build-debug"
+build_dir="build"
 cmake \
   -G Ninja \
   -B ${build_dir} \
