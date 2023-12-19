@@ -44,7 +44,7 @@ class PointerNormalizer(BaseNormalizer):
         return self.compiled.sub('0xPPPPPPPPPPPP', line)
 
 class ThreadNormalizer(BaseNormalizer):
-    compiled = re.compile('\[ET_\w+\s+\d+]')
+    compiled = re.compile(r'\[ET_\w+\s+\d+]')
 
     def normalize(self, line):
         """
@@ -62,7 +62,7 @@ class ThreadNormalizer(BaseNormalizer):
 
 
 class TimestampNormalizer(BaseNormalizer):
-    compiled = re.compile('\[\w+\s+\d+\s+\d+:\d+:\d+\.\d+]')
+    compiled = re.compile(r'\[\w+\s+\d+\s+\d+:\d+:\d+\.\d+]')
 
     def normalize(self, line):
         """

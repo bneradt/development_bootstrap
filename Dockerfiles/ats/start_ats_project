@@ -40,6 +40,7 @@ else
   # The branch does not exist yet. Create it.
   git checkout -b ${branch_name}
 fi
+cp ${HOME}/src/CMakeUserPresets.json ${ts_src}/
 
 tmux new-session -s ${branch_name}   -n "src" -d "cd ${ts_src}; zsh -i"
 tmux new-window  -t ${branch_name}:1 -n "build"  "cd ${ts_src}; zsh -i"

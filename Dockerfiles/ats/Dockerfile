@@ -1,5 +1,5 @@
 # Base image.
-FROM ci.trafficserver.apache.org/ats/fedora:38
+FROM ci.trafficserver.apache.org/ats/fedora:39
 
 # ARG stuff for the build.
 ARG username
@@ -91,6 +91,9 @@ RUN mkdir -p .config/nvim
 COPY init.vim .config/nvim
 COPY coc-settings.json .config/nvim
 
+RUN mkdir -p src
+COPY CMakeUserPresets.json src
+
 RUN \
     sudo chown -R $username:nobody \
         .agignore \
@@ -107,7 +110,8 @@ RUN \
         .tmux.conf \
         .tmux-completion.bash \
         .vim \
-        .vimrc
+        .vimrc \
+        src
 
 # Use vim-plug to retrieve and install plugins from the vimrc.
 RUN \
