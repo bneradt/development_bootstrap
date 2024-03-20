@@ -10,14 +10,22 @@ ARG git_email
 #------------------
 # My customization.
 #------------------
-RUN dnf install -y glibc-locale-source glibc-langpack-en
-RUN localedef -i en_US -f UTF-8 en_US.UTF-8
-
 # User-specific specifications.
 RUN <<EOF
   set -e
+  dnf -y update
+
+  dnf install -y glibc-locale-source glibc-langpack-en
+  localedef -i en_US -f UTF-8 en_US.UTF-8
+
   dnf install -y \
-    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb net-tools
+    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb net-tools \
+    zsh util-linux-user
+
+  dnf install -y \
+    clang clang-tools-extra
+
+  dnf clean all
 EOF
 
 # Python linting tools.
@@ -125,13 +133,6 @@ RUN <<EOF
   nvim +'CocInstall -sync coc-clangd coc-pyright coc-json coc-sh' +qall
 EOF
 
-# Install the latest version of clang.
-RUN <<EOF
-  set -e
-  sudo dnf clean metadata
-  sudo dnf install -y clang clang-tools-extra
-EOF
-
 RUN <<EOF
   set -e
   git config --global user.name "$git_username"
@@ -139,7 +140,6 @@ RUN <<EOF
 EOF
 
 # Use a recent fish and oh-my-zsh.
-RUN sudo dnf install -y zsh util-linux-user
 RUN sh -c "`wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -`"
 RUN <<EOF
   set -e
@@ -171,6 +171,3 @@ RUN <<EOF
 EOF
 
 WORKDIR /home/$username
-
-# Keep this at the end to clean up the dnf cache.
-RUN sudo dnf clean all

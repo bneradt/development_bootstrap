@@ -33,6 +33,11 @@ free_port=`netstat -aln | awk '
   }
 '`
 
+YUBI_ARGUMENT=""
+if [ -d ${HOME}/.yubiagent ]
+then
+  YUBI_ARGUMENT="-v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -v ${HOME}/.ssh/sshca:/home/bneradt/.ssh/sshca -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+fi
 docker run \
   --name ${container_name} \
   --init \
@@ -42,6 +47,7 @@ docker run \
   -d \
   -t \
   -v ${HOME}/.ssh:/home/$(whoami)/.ssh:Z \
+  ${YUBI_ARGUMENT} \
   ${docker_image}
 
 branch_name=${container_name}

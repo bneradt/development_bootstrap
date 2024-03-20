@@ -35,19 +35,25 @@ then
   rm -rf ${install_dir}
 fi
 
+if [ -f Makefile.am ]
+then
+  autoreconf -fi
+  ./configure --prefix ${install_dir} --with-openssl=${openssl} --enable-experimental-plugins --enable-example-plugins
+  bear -- make -j8 install
+else
+  build_dir="build"
+  cmake \
+    -G Ninja \
+    -B ${build_dir} \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DOPENSSL_ROOT_DIR=${openssl} \
+    -DCMAKE_INSTALL_PREFIX=${install_dir} \
+    -DBUILD_EXPERIMENTAL_PLUGINS=ON \
+    -DENABLE_EXAMPLE=ON \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
+    -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+    -DENABLE_AUTEST=ON
 
-build_dir="build"
-cmake \
-  -G Ninja \
-  -B ${build_dir} \
-  -DCMAKE_BUILD_TYPE=Debug \
-  -DOPENSSL_ROOT_DIR=${openssl} \
-  -DCMAKE_INSTALL_PREFIX=${install_dir} \
-  -DBUILD_EXPERIMENTAL_PLUGINS=ON \
-  -DENABLE_EXAMPLE=ON \
-  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
-  -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
-  -DENABLE_AUTEST=ON
-
-cmake --build ${build_dir} -j `nproc`
-cmake --install ${build_dir}
+  cmake --build ${build_dir}
+  cmake --install ${build_dir}
+fi
