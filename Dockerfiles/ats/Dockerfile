@@ -53,13 +53,12 @@ RUN mkdir -p bin
 COPY \
     /bisect_with_autest \
     /build_ats \
-    /build_ats_autoconf \
-    /clean_build_test \
     /build_ats_core \
     /build_ats_coverage \
     /build_ats_not_quic \
-    /build_ats_with_clang \
+    /build_ats_clang \
     /build_ats_quiche \
+    /clean_build_test \
     /cos \
     /normalize_log \
     /start_ats_project \

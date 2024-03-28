@@ -14,17 +14,16 @@ fail()
 openssl="/opt/openssl-quic"
 
 repo_name=`basename $(pwd)`
-build_dir="${HOME}/build/${repo_name}"
-command="autoreconf -fi && ./configure --prefix ${build_dir} --with-openssl=${openssl}--enable-werror --enable-debug --enable-wccp"
+install_dir="${HOME}/build/${repo_name}"
 dirname=$(dirname $(pwd))
-[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running: ${command}"
+[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running"
 
 # Make sure we get the quic-version of curl.
 export PATH=/opt/bin:${PATH}
-if [ -d "${build_dir}" ]
+if [ -d "${install_dir}" ]
 then
   while true; do
-    read -p "${build_dir} already exists. Clean it? (y/n) " yn
+    read -p "${install_dir} already exists. Clean it? (y/n) " yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit 0;;
@@ -33,9 +32,27 @@ then
   done
 
   git clean -d -x -f -f -q
-  rm -rf ${build_dir}
+  rm -rf ${install_dir}
 fi
-autoreconf -fi
-./configure --prefix ${build_dir} --with-openssl=${openssl} --enable-werror --enable-debug --enable-wccp
-bear -- make -j $(nproc)
-make install
+
+if [ -f Makefile.am ]
+then
+  autoreconf -fi
+  ./configure --prefix ${install_dir} --with-openssl=${openssl} --enable-werror --enable-debug
+  bear -- make -j8 install
+else
+  build_dir="build"
+  cmake \
+    -G Ninja \
+    -B ${build_dir} \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DOPENSSL_ROOT_DIR=${openssl} \
+    -DCMAKE_INSTALL_PREFIX=${install_dir} \
+    -DENABLE_EXAMPLE=ON \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
+    -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
+    -DENABLE_AUTEST=ON
+
+  cmake --build ${build_dir}
+  cmake --install ${build_dir}
+fi
