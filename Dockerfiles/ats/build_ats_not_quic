@@ -51,7 +51,11 @@ else
     -DENABLE_EXAMPLE=ON \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
     -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
-    -DENABLE_AUTEST=ON
+    -DENABLE_AUTEST=ON \
+    -DENABLE_CCACHE=ON \
+    -Dopentelemetry_ROOT=/opt \
+    -DENABLE_CRIPTS=ON \
+    -DCMAKE_COLOR_DIAGNOSTICS=ON
 
   cmake --build ${build_dir}
   cmake --install ${build_dir}

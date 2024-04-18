@@ -42,18 +42,13 @@ then
   bear -- make -j8 install
 else
   build_dir="build"
+  #  -DBUILD_TESTING=OFF \
   cmake \
-    -G Ninja \
     -B ${build_dir} \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DOPENSSL_ROOT_DIR=${openssl} \
+    --preset ci-fedora-autest \
     -DCMAKE_INSTALL_PREFIX=${install_dir} \
-    -DBUILD_EXPERIMENTAL_PLUGINS=ON \
-    -DENABLE_EXAMPLE=ON \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
-    -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
-    -DENABLE_AUTEST=ON
-
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DCMAKE_COLOR_DIAGNOSTICS=ON
   cmake --build ${build_dir}
   cmake --install ${build_dir}
 fi

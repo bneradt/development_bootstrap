@@ -14,16 +14,16 @@ fail()
 openssl="/opt/boringssl"
 
 repo_name=`basename $(pwd)`
-build_dir="${HOME}/build/${repo_name}"
+install_dir="${HOME}/build/${repo_name}"
 dirname=$(dirname $(pwd))
-[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}."
+[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running"
 
 # Make sure we get the quic-version of curl.
 export PATH=/opt/bin:${PATH}
-if [ -d "${build_dir}" ]
+if [ -d "${install_dir}" ]
 then
   while true; do
-    read -p "${build_dir} already exists. Clean it? (y/n) " yn
+    read -p "${install_dir} already exists. Clean it? (y/n) " yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit 0;;
@@ -32,9 +32,25 @@ then
   done
 
   git clean -d -x -f -f -q
-  rm -rf ${build_dir}
+  rm -rf ${install_dir}
 fi
-autoreconf -fi
-./configure --prefix=${build_dir} --with-openssl=${openssl} --with-quiche=/opt/quiche --enable-experimental-plugins --enable-example-plugins --enable-werror --enable-debug
-bear -- make -j $(nproc)
-make install
+
+if [ -f Makefile.am ]
+then
+  autoreconf -fi
+  ./configure --prefix ${install_dir} --with-openssl=${openssl} --enable-experimental-plugins --enable-example-plugins
+  bear -- make -j8 install
+else
+  build_dir="build"
+  cmake \
+    -B ${build_dir} \
+    --preset ci-fedora-autest \
+    -DCMAKE_INSTALL_PREFIX=${install_dir} \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -DCMAKE_COLOR_DIAGNOSTICS=ON \
+    -DOPENSSL_ROOT_DIR=${openssl} \
+    -Dquiche_ROOT=/opt/quiche \
+    -DENABLE_QUICHE=ON
+  cmake --build ${build_dir}
+  cmake --install ${build_dir}
+fi

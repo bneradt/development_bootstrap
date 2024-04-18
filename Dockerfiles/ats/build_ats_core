@@ -42,16 +42,7 @@ then
   bear -- make -j8 install
 else
   build_dir="build"
-  cmake \
-    -G Ninja \
-    -B ${build_dir} \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DOPENSSL_ROOT_DIR=${openssl} \
-    -DCMAKE_INSTALL_PREFIX=${install_dir} \
-    -DENABLE_EXAMPLE=ON \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=ON\
-    -DCMAKE_COMPILE_WARNING_AS_ERROR=ON \
-    -DENABLE_AUTEST=ON
+  cmake -B ${build_dir} --preset dev -DCMAKE_INSTALL_PREFIX=${install_dir}
 
   cmake --build ${build_dir}
   cmake --install ${build_dir}
