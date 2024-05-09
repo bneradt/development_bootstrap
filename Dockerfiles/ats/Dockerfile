@@ -1,5 +1,5 @@
 # Base image.
-FROM ci.trafficserver.apache.org/ats/fedora:39
+FROM ci.trafficserver.apache.org/ats/fedora:40
 
 # ARG stuff for the build.
 ARG username

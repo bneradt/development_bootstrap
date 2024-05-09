@@ -38,10 +38,12 @@ if [ -d ${HOME}/.yubiagent ]
 then
   YUBI_ARGUMENT="-v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -v ${HOME}/.ssh/sshca:/home/bneradt/.ssh/sshca -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
 fi
+
+# Before bpftrace used --cap-add=SYS_PTRACE. With bpftrace we use --privileged.
 docker run \
   --name ${container_name} \
   --init \
-  --cap-add=SYS_PTRACE \
+  --privileged \
   --network=host \
   -u $(whoami) \
   -d \
