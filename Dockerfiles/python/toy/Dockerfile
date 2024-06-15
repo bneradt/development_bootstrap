@@ -15,7 +15,7 @@ RUN <<EOF
   localedef -i en_US -f UTF-8 en_US.UTF-8
 
   dnf install -y \
-    git pipenv cmake clang clang-tools-extra golang nodejs \
+    git pipenv cmake clang clang-tools-extra nodejs \
     python3 python3-pip \
     python3-autopep8 python3-flake8 \
     sudo wget ctags the_silver_searcher tmux fzf curl \
@@ -23,6 +23,23 @@ RUN <<EOF
 
   # Clean up the cache to save space.
   dnf clean all
+EOF
+
+# Install the latest version of go.
+RUN <<EOF
+  set -e
+
+  if [ `uname -m` = "arm64" -o `uname -m` = "aarch64" ]
+  then
+    ARCH="arm64"
+  else
+    ARCH="amd64"
+  fi
+  BASE=/usr/local
+  wget https://go.dev/dl/go1.21.0.linux-${ARCH}.tar.gz
+  sudo rm -rf ${BASE}/go && sudo tar -C ${BASE} -xf go1.21.0.linux-${ARCH}.tar.gz
+  rm go1.21.0.linux-${ARCH}.tar.gz
+  sudo chmod -R a+rX ${BASE}
 EOF
 
 # Python linting tools.
