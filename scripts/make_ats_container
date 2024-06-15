@@ -33,10 +33,12 @@ free_port=`netstat -aln | awk '
   }
 '`
 
+docker_username=$(docker run --rm -it ${docker_image} 'whoami' | tr -d '[:space:]')
+
 YUBI_ARGUMENT=""
 if [ -d ${HOME}/.yubiagent ]
 then
-  YUBI_ARGUMENT="-v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -v ${HOME}/.ssh/sshca:/home/bneradt/.ssh/sshca -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+  YUBI_ARGUMENT="-v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -v ${HOME}/.ssh/sshca:/home/${docker_username}/.ssh/sshca -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
 fi
 
 # Before bpftrace used --cap-add=SYS_PTRACE. With bpftrace we use --privileged.
@@ -45,19 +47,19 @@ docker run \
   --init \
   --privileged \
   --network=host \
-  -u $(whoami) \
+  -u ${docker_username} \
   -d \
   -t \
-  -v ${HOME}/.ssh:/home/$(whoami)/.ssh:Z \
+  -v ${HOME}/.ssh:/home/${docker_username}/.ssh:Z \
   ${YUBI_ARGUMENT} \
   ${docker_image}
 
 branch_name=${container_name}
-docker exec -u $(whoami) ${container_name} /home/$(whoami)/bin/start_ats_project ${branch_name}
+docker exec -u ${docker_username} ${container_name} /home/${docker_username}/bin/start_ats_project ${branch_name}
 
 echo
 echo "Enter the container with:"
-echo "docker exec -it -u $(whoami) ${container_name} /bin/bash"
+echo "docker exec -it -u ${docker_username} ${container_name} /bin/bash"
 echo
 echo "Enter the tmux session with:"
 echo "tmux attach -t ${branch_name}"
