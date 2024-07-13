@@ -53,6 +53,7 @@ else
   cmake \
     -B ${build_dir} \
     --preset ci-fedora-autest \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DCMAKE_INSTALL_PREFIX=${install_dir} \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
     -DCMAKE_COLOR_DIAGNOSTICS=ON
