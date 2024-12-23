@@ -1,5 +1,5 @@
 # Base image.
-FROM ci.trafficserver.apache.org/ats/fedora:40
+FROM ci.trafficserver.apache.org/ats/fedora:41
 
 # ARG stuff for the build.
 ARG username
@@ -63,6 +63,7 @@ COPY \
     /normalize_log \
     /start_ats_project \
     /pretty_print_json \
+    /reset_agent \
     /home/$username/bin/
 
 # Alas, COPY is not run as USER, and older docker version do not have --chown
