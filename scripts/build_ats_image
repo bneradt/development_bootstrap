@@ -34,6 +34,7 @@ cp -rf ${context_dir}/fedora/.[^.]* ${tmpdir}
 
 cd $tmpdir
 docker build \
+  --no-cache \
   --ssh default \
   -t ${tag_name} \
   --build-arg "username=${username}" \

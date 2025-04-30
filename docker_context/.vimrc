@@ -412,7 +412,6 @@ abbreviate teh the
 
 " To help vim deal with pasting text
 :map <F9> :set invpaste <CR>
-set pt=<F9>
 
 " Toggle vim's spell checker with <F5>
 :map <F5> :setlocal spell! spelllang=en_us<cr>
