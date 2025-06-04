@@ -58,6 +58,7 @@ COPY \
     /build_ats_not_quic \
     /build_ats_clang \
     /build_ats_quiche \
+    /cedge \
     /clean_build_test \
     /cos \
     /normalize_log \
