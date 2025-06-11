@@ -13,6 +13,8 @@ repo_name=$1
 git clone git@git.ouryahoo.com:bneradt/trafficserver.git ${repo_name}
 cd ${repo_name}
 git remote add upstream git@git.ouryahoo.com:Edge/trafficserver.git
+git remote add osb git@github.com:bneradt/trafficserver.git
+git remote add os git@github.com:apache/trafficserver.git
 git remote update
 
 git pull upstream 10.0.x
