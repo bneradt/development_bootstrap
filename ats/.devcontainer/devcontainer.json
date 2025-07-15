@@ -1,0 +1,49 @@
+{
+  "name": "ATS Development Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "username": "${localEnv:USER}",
+      // User has to set USER_UID in their environment, preferably their rc file.
+      "userid": "${localEnv:USER_UID}",
+      "git_username": "Brian Neradt",
+      "git_email": "brian.neradt@gmail.com"
+    }
+  },
+  "runArgs": [
+    "--init",
+    "--privileged",
+    "--network=host",
+    "-u", "bneradt",
+    "-t",
+    "-v",
+    "${env:HOME}/.ssh:/home/bneradt/.ssh:Z",
+    "-v",
+    "/run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock",
+    "-v",
+    "${env:HOME}/.ssh/sshca:/home/bneradt/.ssh/sshca",
+    "-e",
+    "SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "eamodio.gitlens",
+        "github.copilot",
+        "github.copilot-chat",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-vscode.cpptools-themes",
+        "vscodevim.vim"
+      ]
+    }
+  },
+  "workspaceFolder": "/home/bneradt/src/ts_asf",
+  "remoteUser": "${localEnv:USER}",
+  "postCreateCommand": "cd /home/bneradt/src/ts_asf && git checkout master && git pull upstream master && git push origin master"
+}

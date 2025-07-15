@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+# Build ATS using the /opt/openssl-quic version of OpenSSL.
+
+set -e
+set -x
+expected_dirname="${HOME}/src"
+fail()
+{
+  echo $1
+  exit 1
+}
+
+openssl="/opt/openssl-quic"
+
+repo_name=`basename $(pwd)`
+build_dir="${HOME}/build/${repo_name}"
+command="autoreconf -fi && ./configure --prefix ${build_dir} --with-openssl=${openssl}--enable-experimental-plugins --enable-example-plugins --enable-werror --enable-debug --enable-wccp --enable-coverage"
+dirname=$(dirname $(pwd))
+[ "${dirname}" = "${expected_dirname}" ] || fail "Expected to be in: ${expected_dirname}. Not running: ${command}"
+
+# Make sure we get the quic-version of curl.
+export PATH=/opt/bin:${PATH}
+if [ -d "${build_dir}" ]
+then
+  while true; do
+    read -p "${build_dir} already exists. Clean it? (y/n) " yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit 0;;
+        * ) echo "Please answer y or n.";;
+    esac
+  done
+
+  git clean -d -x -f -f -q
+  rm -rf ${build_dir}
+fi
+
+#
+# Initialize base test.
+#
+lcov --directory . --no-external --capture --initial --output-file /tmp/lcov_tracefile_base.info
+
+#
+# Build ATS.
+#
+autoreconf -fi
+./configure --prefix ${build_dir} --with-openssl=${openssl} --enable-experimental-plugins --enable-example-plugins --enable-werror --enable-debug --enable-wccp --enable-coverage
+bear -- make -j $(nproc)
+make install
+
+#
+# Run the tests.
+#
+make -j4 check
+${build_dir}/bin/traffic_server -K -k -R 1
+cd tests
+export PATH=/opt/bin:${PATH}
+./autest.sh --ats-bin ${build_dir}/bin/ --sandbox /tmp/sandbox
+
+#
+# Generate the report.
+#
+# Use `.` for --directory, not `pwd`. For some reason that seems
+# important. It makes header files processed better.
+lcov --directory . --capture --output-file /tmp/lcov_tracefile_test.info
+
+# Combine with the base tracefile.
+lcov \
+    --add-tracefile /tmp/lcov_tracefile_base.info \
+    --add-tracefile /tmp/lcov_tracefile_test.info \
+    --output-file /tmp/lcov_tracefile_total.info
+
+# Filter out system and other unwanted files.
+lcov \
+    --remove /tmp/lcov_tracefile_total.info \
+        '/opt/*' \
+        '/usr/*' \
+        '*/TestBox.h' \
+        '*/lib/yamlcpp/*' \
+        '*/test/*' \
+        '*/test_*' \
+        '*/tests/*' \
+        '*/unit-tests/*' \
+        '*/unit_tests/*' \
+    --output /tmp/lcov_tracefile_filtered.info
+
+git_commit="$(git log -n1 --oneline)"
+genhtml \
+    --title "${git_commit}" \
+    --output-directory /tmp/lcov-report \
+    /tmp/lcov_tracefile_filtered.info

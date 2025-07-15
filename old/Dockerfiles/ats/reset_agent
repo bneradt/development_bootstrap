@@ -1,0 +1,4 @@
+if [ -n "$(compgen -G '/tmp/vscode-ssh-auth-*')" ]
+then
+  export SSH_AUTH_SOCK=`ls -tr /tmp/vscode-ssh-auth-* | tail -1`
+fi
