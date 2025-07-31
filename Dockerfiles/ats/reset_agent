@@ -1,27 +1,21 @@
 #!/bin/bash
 
-# Check if VSCODE_GIT_ASKPASS_NODE is set
-if [ -z "${VSCODE_GIT_ASKPASS_NODE:-}" ]; then
-    echo "VSCODE_GIT_ASKPASS_NODE is not set"
-    exit 1
-fi
-
-if echo "${VSCODE_GIT_ASKPASS_NODE}" | grep -q vscode; then
-    # VSCode
-    if [ -n "$(compgen -G '/tmp/vscode-ssh-auth-*')" ]; then
-        SSH_AUTH_SOCK=$(ls -tr /tmp/vscode-ssh-auth-* 2>/dev/null | tail -1)
-        if [ -n "${SSH_AUTH_SOCK}" ]; then
-            export SSH_AUTH_SOCK
-        fi
-    fi
-elif echo "${VSCODE_GIT_ASKPASS_NODE}" | grep -q cursor; then
+if [ -n "$(compgen -G '/tmp/cursor-remote-ssh-*')" ]
+then
     # Cursor
-    if [ -n "$(compgen -G '/tmp/cursor-remote-ssh-*')" ]; then
-        SSH_AUTH_SOCK=$(ls -tr /tmp/cursor-remote-ssh-* 2>/dev/null | tail -1)
-        if [ -n "${SSH_AUTH_SOCK}" ]; then
-            export SSH_AUTH_SOCK
-        fi
+    SSH_AUTH_SOCK=$(ls -tr /tmp/cursor-remote-ssh-* 2>/dev/null | tail -1)
+    if [ -n "${SSH_AUTH_SOCK}" ]
+    then
+        export SSH_AUTH_SOCK
+    fi
+elif [ -n "$(compgen -G '/tmp/vscode-ssh-auth-*')" ]
+then
+    # VSCode
+    SSH_AUTH_SOCK=$(ls -tr /tmp/vscode-ssh-auth-* 2>/dev/null | tail -1)
+    if [ -n "${SSH_AUTH_SOCK}" ]
+    then
+        export SSH_AUTH_SOCK
     fi
 else
-    echo "Could not determine editor."
+    echo "Could not find the socket to set SSH_AUTH_SOCK to."
 fi
