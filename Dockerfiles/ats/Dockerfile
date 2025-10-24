@@ -1,5 +1,5 @@
 # Base image.
-FROM ci.trafficserver.apache.org/ats/fedora:42
+FROM ci.trafficserver.apache.org/ats/fedora:43
 
 # ARG stuff for the build.
 ARG username
@@ -19,10 +19,8 @@ RUN <<EOF
   localedef -i en_US -f UTF-8 en_US.UTF-8
 
   dnf install -y \
-    ctags the_silver_searcher tmux man-pages neovim bear git tcpdump gdb net-tools \
-    zsh util-linux-user
-
-  dnf install -y \
+    ctags the_silver_searcher tmux man-pages neovim bear git gh tcpdump gdb net-tools \
+    zsh util-linux-user \
     clang clang-tools-extra
 
   dnf clean all
@@ -61,6 +59,7 @@ COPY \
     /cedge \
     /clean_build_test \
     /cos \
+    /install_extensions \
     /normalize_log \
     /start_ats_project \
     /pretty_print_json \

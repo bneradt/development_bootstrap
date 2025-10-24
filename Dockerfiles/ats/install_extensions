@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+for extension in \
+  anysphere.cursorpyright \
+  eamodio.gitlens \
+  github.vscode-pull-request-github \
+  llvm-vs-code-extensions.vscode-clangd \
+  ms-azuretools.vscode-containers \
+  ms-azuretools.vscode-docker \
+  ms-python.debugpy \
+  ms-python.python \
+  ms-vscode.cmake-tools
+do
+  cursor --install-extension ${extension}
+done

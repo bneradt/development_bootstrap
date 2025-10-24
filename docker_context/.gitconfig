@@ -15,6 +15,7 @@
     lg = log --decorate --graph
     tg = log --decorate --graph --oneline
     shw = show --decorate -s
+    shwd = show --quiet --pretty=format:%B
     ctags = !.git/hooks/ctags
     cln = clean -d -x -f -f -q
 
