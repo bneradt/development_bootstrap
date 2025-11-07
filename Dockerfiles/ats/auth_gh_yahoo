@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+cat ~/.ssh/gh-yahoo.pat| gh auth login --hostname git.ouryahoo.com --with-token
