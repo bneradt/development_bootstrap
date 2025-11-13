@@ -157,6 +157,7 @@ RUN <<EOF
   sudo chown -R $username:nobody \
       .zshrc \
       .oh-my-zsh/
+  echo 'export PATH=/opt/bin:/opt/go/bin:${PATH}' >> /home/${username}/.zshrc
 EOF
 
 RUN sudo chsh -s /usr/bin/zsh ${username}
