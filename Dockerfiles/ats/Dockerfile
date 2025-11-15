@@ -21,7 +21,7 @@ RUN <<EOF
   dnf install -y \
     ctags the_silver_searcher tmux man-pages neovim bear git gh tcpdump gdb net-tools \
     zsh util-linux-user \
-    clang clang-tools-extra
+    clang clang-tools-extra graphviz
 
   dnf clean all
 EOF
@@ -57,6 +57,7 @@ COPY \
     /build_ats_not_quic \
     /build_ats_clang \
     /build_ats_quiche \
+    /build_docs \
     /cedge \
     /clean_build_test \
     /cos \
