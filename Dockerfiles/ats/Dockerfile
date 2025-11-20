@@ -173,4 +173,22 @@ RUN <<EOF
   ./install --all
 EOF
 
+# Bake in a local clone of ATS to save time on container creation
+RUN <<EOF
+  set -e
+  my_repo_fork=https://github.com/${username}/trafficserver.git
+  cd /home/${username}/src
+  git clone ${my_repo_fork} ts_asf
+  cd ts_asf
+  git remote add upstream https://github.com/apache/trafficserver.git
+  git remote update
+  git checkout master
+  git remote set-url origin git@github.com:${username}/trafficserver.git
+  git remote set-url upstream git@github.com:apache/trafficserver.git
+
+  # Now, compress the repository for the image.
+  git repack -adf
+  git gc --aggressive
+EOF
+
 WORKDIR /home/$username

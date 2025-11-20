@@ -13,7 +13,7 @@ fail()
 branch_name=${1}; shift
 
 srcdir=${HOME}/src
-repo_clone_name=ts_asf_master_${branch_name}
+repo_clone_name=ts_asf
 ts_src=${srcdir}/${repo_clone_name}
 
 set -e
@@ -21,13 +21,10 @@ set -x
 
 mkdir -p ${srcdir}
 cd ${srcdir}
-[ -d "${repo_clone_name}" ] && fail "${srcdir}/${repo_clone_name} already exists"
 
 # Assume the user has a fork using their username.
 my_repo_fork=git@github.com:$(whoami)/trafficserver.git
-git clone ${my_repo_fork} $repo_clone_name
-cd $repo_clone_name
-git remote add upstream git@github.com:apache/trafficserver.git
+cd ${ts_src}
 git remote update
 git checkout master
 git pull upstream master
