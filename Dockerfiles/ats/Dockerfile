@@ -50,6 +50,7 @@ RUN mkdir -p bin
 
 COPY \
     /auth_gh_yahoo \
+    /auth_gh_asf \
     /bisect_with_autest \
     /build_ats \
     /build_ats_core \
