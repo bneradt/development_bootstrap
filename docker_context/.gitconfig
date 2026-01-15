@@ -18,6 +18,7 @@
     shwd = show --quiet --pretty=format:%B
     ctags = !.git/hooks/ctags
     cln = clean -d -x -f -f -q
+    cr = restore -s cr -- :(top).cursor
 
 [init]
     templatedir = ~/.git_template
