@@ -51,14 +51,14 @@ RUN mkdir -p bin
 COPY \
     /auth_gh_yahoo \
     /auth_gh_asf \
+    /auth_jira_cli \
     /bisect_with_autest \
     /build_ats \
     /build_ats_core \
     /build_ats_coverage \
     /build_ats_not_quic \
-    /build_ats_clang \
     /build_ats_quiche \
-    /build_docs \
+    /build_ats_docs \
     /cedge \
     /clean_build_test \
     /cos \

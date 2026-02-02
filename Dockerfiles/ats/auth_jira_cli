@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+jira_cli configure --username brian.neradt@yahooinc.com --token "$(cat ~/.ssh/jira.pat)"
