@@ -59,6 +59,7 @@ COPY \
     /build_ats_not_quic \
     /build_ats_quiche \
     /build_ats_docs \
+    /build_ats_ut \
     /cedge \
     /clean_build_test \
     /cos \
