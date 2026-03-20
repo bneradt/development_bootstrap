@@ -4,7 +4,7 @@
 
 set -e
 set -x
-expected_dirname="${HOME}/src"
+expected_dirname="${HOME}/shared"
 fail()
 {
   echo $1

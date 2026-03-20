@@ -12,15 +12,17 @@ fail()
 [ $# -eq 1 ] || fail "Not enough parameters: ${usage}"
 branch_name=${1}; shift
 
-srcdir=${HOME}/src
+shareddir=${HOME}/shared
 repo_clone_name=ts_asf
-ts_src=${srcdir}/${repo_clone_name}
+initial_ts_clone=${HOME}/src/${repo_clone_name}
+ts_src=${shareddir}/${repo_clone_name}
+mv ${initial_ts_clone} ${ts_src}
 
 set -e
 set -x
 
-mkdir -p ${srcdir}
-cd ${srcdir}
+mkdir -p ${shareddir}
+cd ${shareddir}
 
 # Assume the user has a fork using their username.
 my_repo_fork=git@github.com:$(whoami)/trafficserver.git

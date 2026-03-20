@@ -49,6 +49,7 @@ WORKDIR /home/$username
 RUN mkdir -p bin
 
 COPY \
+    /ats-worktree-env.sh \
     /auth_gh_yahoo \
     /auth_gh_asf \
     /auth_jira_cli \
@@ -61,7 +62,6 @@ COPY \
     /build_ats_docs \
     /build_ats_ut \
     /cedge \
-    /clean_build_test \
     /cos \
     /install_extensions \
     /normalize_log \
