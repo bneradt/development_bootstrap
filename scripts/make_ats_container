@@ -16,7 +16,7 @@ docker_image=${1}; shift
 container_name=${1}; shift
 [ -d "${HOME}/.codex" ] || fail "Codex directory does not exist: ${HOME}/.codex"
 
-host_src_dir="${HOME}/project_not_synced/codex/${container_name}"
+host_src_dir="${HOME}/project/shared/${container_name}"
 mkdir -p "${host_src_dir}"
 
 # Select a random free port.
@@ -56,6 +56,8 @@ docker run \
   -t \
   -v ${HOME}/.ssh:/home/${docker_username}/.ssh:Z \
   -v ${HOME}/.codex:/home/${docker_username}/.codex:Z \
+  -v ${HOME}/.agents:/home/${docker_username}/.agents:Z \
+  -v ${HOME}/.claude/skills:/home/${docker_username}/.claude/skills:Z \
   -v ${host_src_dir}:/home/${docker_username}/shared:Z \
   ${YUBI_ARGUMENT} \
   ${docker_image}

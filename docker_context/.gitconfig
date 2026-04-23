@@ -14,11 +14,12 @@
     d = difftool -d
     lg = log --decorate --graph
     tg = log --decorate --graph --oneline
+    ta = log --decorate --graph --pretty=format:'%al %s %d'
     shw = show --decorate -s
     shwd = show --quiet --pretty=format:%B
     ctags = !.git/hooks/ctags
     cln = clean -d -x -f -f -q
-    cr = restore -s origin/cr -- :(top).cursor
+    cr = restore -s origin/cr -- :(top).cursor :(top).agents
 
 [init]
     templatedir = ~/.git_template
@@ -40,3 +41,6 @@
 
 [help]
     autocorrect = prompt
+
+[worktree]
+    useRelativePaths = true

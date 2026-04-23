@@ -11,6 +11,16 @@ fail()
   exit 1
 }
 
+# Parse options. -y answers "yes" to the clean prompt automatically.
+auto_yes=0
+while getopts "y" opt; do
+  case ${opt} in
+    y) auto_yes=1 ;;
+    *) fail "Usage: $(basename $0) [-y]" ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 openssl="/opt/boringssl"
 
 repo_name=`basename $(pwd)`
@@ -22,14 +32,16 @@ dirname=$(dirname $(pwd))
 export PATH=/opt/bin:${PATH}
 if [ -d "${install_dir}" ]
 then
-  while true; do
-    read -p "${install_dir} already exists. Clean it? (y/n) " yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer y or n.";;
-    esac
-  done
+  if [ ${auto_yes} -eq 0 ]; then
+    while true; do
+      read -p "${install_dir} already exists. Clean it? (y/n) " yn
+      case $yn in
+          [Yy]* ) break;;
+          [Nn]* ) exit 0;;
+          * ) echo "Please answer y or n.";;
+      esac
+    done
+  fi
 
   git clean -d -x -f -f -q
   rm -rf ${install_dir}
